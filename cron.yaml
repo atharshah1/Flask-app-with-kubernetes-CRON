@@ -1,0 +1,31 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: test
+spec:
+  schedule: "*/15 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: d3
+            image: mohammadathar/d3
+            imagePullPolicy: Always
+            env:
+            - name: DB_USERNAME
+              valueFrom: 
+                secretKeyRef: 
+                  name: test-db-secret 
+                  key: username
+            - name: DB_PASSWORD
+              valueFrom: 
+                secretKeyRef: 
+                  name: test-db-secret 
+                  key: password
+            - name: EMAIL_PASS
+              valueFrom: 
+                secretKeyRef: 
+                  name: test-db-secret 
+                  key: email
+          restartPolicy: OnFailure

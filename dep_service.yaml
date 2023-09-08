@@ -1,0 +1,79 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: d1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      service: d1
+  template:
+    metadata:
+      labels:
+        service: d1
+    spec:
+      containers:
+        - name: d1
+          image: mohammadathar/d1
+          ports:
+            - containerPort: 80
+          
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: d2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      service: d2
+  template:
+    metadata:
+      labels:
+        service: d2
+    spec:
+      containers:
+        - name: d2
+          image: mohammadathar/d2
+          ports:
+            - containerPort: 5000
+          env:
+            - name: DB_USERNAME
+              valueFrom: 
+                secretKeyRef: 
+                  name: test-db-secret 
+                  key: username
+            - name: DB_PASSWORD
+              valueFrom: 
+                secretKeyRef: 
+                  name: test-db-secret 
+                  key: password
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: d1-service
+spec:
+  type: LoadBalancer
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+  selector:
+    service: d1
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: d2-service
+spec:
+  type: NodePort
+  ports:
+    - protocol: TCP
+      port: 5000
+      nodePort: 31000
+      targetPort: 5000
+  selector:
+    service: d2

@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      service: postgres
+  template:
+    metadata:
+      labels:
+        service: postgres
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:10.1
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_DB
+              value: flask_db
+            - name: POSTGRES_USER
+              valueFrom: 
+                secretKeyRef: 
+                  name: test-db-secret 
+                  key: username
+            - name: POSTGRES_PASSWORD
+              valueFrom: 
+                secretKeyRef: 
+                  name: test-db-secret 
+                  key: password
+          volumeMounts:
+            - mountPath: "/var/lib/postgresql/data"
+              name: "mendix-pgdata"
+      volumes:
+        - hostPath:
+            path: "/home/docker/pgdata"
+          name: mendix-pgdata
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: psql-service
+spec:
+  type: ClusterIP
+  ports:
+    - port: 5432
+  selector:
+    service: postgres

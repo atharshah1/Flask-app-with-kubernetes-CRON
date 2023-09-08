@@ -1,0 +1,4 @@
+FROM python:3.9 
+ADD D3_scrapper.py .
+RUN pip install requests psycopg2-binary
+CMD ["python", "./D3_scrapper.py"]
