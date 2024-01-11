@@ -1,5 +1,5 @@
 
-# Case Study
+# Flask-app-with-kubernetes-CRON
 
 A case study to deploy webapp, flask backend, database and a python scrapper and alert.
 
